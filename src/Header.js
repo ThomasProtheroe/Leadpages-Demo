@@ -1,5 +1,6 @@
 import React from 'react';
 
+// MUI imports
 import Box from '@mui/material/Box';
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
@@ -8,6 +9,7 @@ import Button from '@mui/material/Button';
 import IconButton from '@mui/material/IconButton';
 import MenuIcon from '@mui/icons-material/Menu';
 
+// Server helpers
 import { createMockFormSubmission } from './service/mockServer';
 
 export default function Header() {
