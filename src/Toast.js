@@ -7,18 +7,20 @@ import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
 
 // Server helpers
-import { onMessage } from './service/mockServer';
+import { onMessage, saveLikedFormSubmission } from './service/mockServer';
+
 
 export default function Toast() {
   const [open, setOpen] = React.useState(false);
   const [toastData, setToastData] = React.useState();
   const [toastId, setToastId] = React.useState();
 
+  // Form submission data comes from the server,
+  // you can see the data format in mockServer/createMockFormSubmission()
   const generateToast = (formSubmission) => {
     setToastId(formSubmission.id);
     setToastData(formSubmission.data);
     
-
     setOpen(true);
   };
 
@@ -33,9 +35,15 @@ export default function Toast() {
     setOpen(false);
   };
 
+  const likeToast = () => {
+    saveLikedFormSubmission({id: toastId, data: toastData});
+
+    closeToast();
+  };
+
   const action = (
     <>
-      <Button color="secondary" size="small" onClick={closeToast}>
+      <Button color="secondary" size="small" onClick={likeToast}>
         Like
       </Button>
       <IconButton
@@ -49,6 +57,7 @@ export default function Toast() {
     </>
   );
 
+  //TODO - custom snackbar body so we can make it multi-line (time permitting)
   return (
     <Snackbar
       open={open}
@@ -56,7 +65,7 @@ export default function Toast() {
       message={getToastMessage()}
       action={action}
       onclose={closeToast}
-      key={toastData?.id}
+      key={toastId}
     />
   );
 }
