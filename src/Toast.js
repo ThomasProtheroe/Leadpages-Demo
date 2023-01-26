@@ -10,18 +10,27 @@ import CloseIcon from '@mui/icons-material/Close';
 import { onMessage } from './service/mockServer';
 
 export default function Toast() {
-  const [isOpen, setIsOpen] = React.useState(false);
+  const [open, setOpen] = React.useState(false);
+  const [toastData, setToastData] = React.useState();
+  const [toastId, setToastId] = React.useState();
 
   const generateToast = (formSubmission) => {
-    //TODO - load form submission data into toast for display
+    setToastId(formSubmission.id);
+    setToastData(formSubmission.data);
+    
 
-    setIsOpen(true);
+    setOpen(true);
   };
 
   onMessage(generateToast);
 
+  const getToastMessage = () => {
+    const messageString = `${toastData?.firstName} ${toastData?.lastName} - ${toastData?.email}`;
+    return messageString;
+  }
+
   const closeToast = () => {
-    setIsOpen(false);
+    setOpen(false);
   };
 
   const action = (
@@ -42,10 +51,12 @@ export default function Toast() {
 
   return (
     <Snackbar
-      open={isOpen}
-      autoHideDuration={10000}
-      message="Name/email goes here"
+      open={open}
+      autoHideDuration={8000}
+      message={getToastMessage()}
       action={action}
+      onclose={closeToast}
+      key={toastData?.id}
     />
   );
 }
