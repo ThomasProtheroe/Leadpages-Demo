@@ -9,7 +9,7 @@ import CloseIcon from '@mui/icons-material/Close';
 // Server helpers
 import { onMessage, saveLikedFormSubmission } from './service/mockServer';
 
-export default function Toast() {
+export default function Toast({ updateFunction }) {
   const [open, setOpen] = useState(false);
   const [toastData, setToastData] = useState();
   const [toastId, setToastId] = useState();
@@ -38,6 +38,7 @@ export default function Toast() {
     const likedToast = { ...toastData, liked: true };
     saveLikedFormSubmission({id: toastId, data: likedToast});
 
+    updateFunction();
     closeToast();
   };
 
@@ -57,7 +58,6 @@ export default function Toast() {
     </>
   );
 
-  //TODO - custom snackbar body so we can make it multi-line (time permitting)
   return (
     <Snackbar
       open={open}
