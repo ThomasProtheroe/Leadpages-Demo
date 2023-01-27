@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 // MUI imports
 import Button from '@mui/material/Button';
@@ -9,7 +9,7 @@ import CloseIcon from '@mui/icons-material/Close';
 // Server helpers
 import { onMessage, saveLikedFormSubmission } from './service/mockServer';
 
-export default function Toast({ updateFunction }) {
+export default function Toast({ updateFunction, maxServerRetries }) {
   const [open, setOpen] = useState(false);
   const [toastData, setToastData] = useState();
   const [toastId, setToastId] = useState();
@@ -23,7 +23,10 @@ export default function Toast({ updateFunction }) {
     setOpen(true);
   };
 
-  onMessage(generateToast);
+  useEffect(() => {
+    onMessage(generateToast);
+  }, []);
+  
 
   const getToastMessage = () => {
     const messageString = `${toastData?.firstName} ${toastData?.lastName} - ${toastData?.email}`;
@@ -34,11 +37,27 @@ export default function Toast({ updateFunction }) {
     setOpen(false);
   };
 
+  // Would have liked to modularize this and share it between the two components, but
+  // it fell outside the time constraints
+  const retry = (operation, paramObject,  finalErr = 'Server cannot be reached.') => new Promise((resolve, reject) => {
+    let retries = maxServerRetries;
+    return operation(paramObject)
+      .then(() => {
+        updateFunction();
+      })
+      .catch((reason) => {
+        if (retries > 0) {
+          return retry(operation, paramObject, retries - 1);
+        }
+        
+        return reject(finalErr);
+      });
+  });
+
   const likeToast = () => {
     const likedToast = { ...toastData, liked: true };
-    saveLikedFormSubmission({id: toastId, data: likedToast});
+    retry(saveLikedFormSubmission, {id: toastId, data: likedToast});
 
-    updateFunction();
     closeToast();
   };
 
