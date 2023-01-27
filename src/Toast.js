@@ -1,4 +1,4 @@
-import React from 'react';
+import { useState } from 'react';
 
 // MUI imports
 import Button from '@mui/material/Button';
@@ -9,11 +9,10 @@ import CloseIcon from '@mui/icons-material/Close';
 // Server helpers
 import { onMessage, saveLikedFormSubmission } from './service/mockServer';
 
-
 export default function Toast() {
-  const [open, setOpen] = React.useState(false);
-  const [toastData, setToastData] = React.useState();
-  const [toastId, setToastId] = React.useState();
+  const [open, setOpen] = useState(false);
+  const [toastData, setToastData] = useState();
+  const [toastId, setToastId] = useState();
 
   // Form submission data comes from the server,
   // you can see the data format in mockServer/createMockFormSubmission()
@@ -36,7 +35,8 @@ export default function Toast() {
   };
 
   const likeToast = () => {
-    saveLikedFormSubmission({id: toastId, data: toastData});
+    const likedToast = { ...toastData, liked: true };
+    saveLikedFormSubmission({id: toastId, data: likedToast});
 
     closeToast();
   };
@@ -64,7 +64,7 @@ export default function Toast() {
       autoHideDuration={8000}
       message={getToastMessage()}
       action={action}
-      onclose={closeToast}
+      onClose={closeToast}
       key={toastId}
     />
   );
